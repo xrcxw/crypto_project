@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="text-white">📊 Анализ волатильности криптовалют</h1>
+    <form method="post" action="{% url 'update_data' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-warning">🔄 Обновить данные из API</button>
+    </form>
+</div>
+
+<div class="row">
+    {% for coin in coins %}
+    <div class="col-md-4 mb-3">
+        <div class="card h-100 bg-dark text-white border-secondary">
+            <div class="card-body">
+                <h5 class="card-title text-white">
+                    {{ coin.name }} 
+                    <small class="text-muted">{{ coin.symbol }}</small>
+                </h5>
+                <p class="card-text text-white">
+                    <strong>💰 Цена:</strong> ${{ coin.current_price_usd|default:"—" }}<br>
+                    {% if coin.latest_report %}
+                        <strong>📊 Волатильность (7д):</strong> 
+                        <span class="badge {% if coin.latest_report.volatility_percent > 80 %}bg-danger{% elif coin.latest_report.volatility_percent > 40 %}bg-warning{% else %}bg-success{% endif %}">
+                            {{ coin.latest_report.volatility_percent }}%
+                        </span><br>
+                        <strong>📈 Изменение:</strong> 
+                        <span class="{% if coin.latest_report.price_change_percent > 0 %}text-success{% else %}text-danger{% endif %}">
+                            {{ coin.latest_report.price_change_percent|floatformat:2 }}%
+                        </span>
+                    {% else %}
+                        <span class="text-muted">Нажмите "Обновить данные"</span>
+                    {% endif %}
+                </p>
+                <a href="{% url 'coin_detail' coin.id %}" class="btn btn-primary btn-sm">Детали</a>
+                <a href="{% url 'add_to_watchlist' coin.id %}" class="btn btn-outline-secondary btn-sm">⭐</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="alert alert-info">
+        Нет данных. Нажмите кнопку "Обновить данные из API", чтобы загрузить криптовалюты.
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

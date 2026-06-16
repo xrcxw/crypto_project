@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="mb-3">
+    <a href="{% url 'index' %}" class="btn btn-secondary">← Назад</a>
+    
+    {% if user.is_authenticated %}
+        {% if is_in_watchlist %}
+            <a href="{% url 'remove_from_watchlist' coin.id %}" class="btn btn-danger">🗑️ Удалить из избранного</a>
+        {% else %}
+            <a href="{% url 'add_to_watchlist' coin.id %}" class="btn btn-outline-warning">⭐ В избранное</a>
+        {% endif %}
+    {% endif %}
+</div>
+
+<div class="card mb-4 bg-dark text-white border-secondary">
+    <div class="card-body">
+        <h1 class="text-white">{{ coin.name }} <small class="text-muted">{{ coin.symbol }}</small></h1>
+        <p class="text-white">💰 Текущая цена: <strong>${{ coin.current_price_usd }}</strong></p>
+        <p class="text-white">🏦 Рыночная капитализация: ${{ coin.market_cap|default:"—" }}</p>
+        {% if latest_report %}
+            <p class="text-white">📊 Волатильность (7д): <strong>{{ latest_report.volatility_percent }}%</strong></p>
+            <p class="text-white">📈 Изменение за 7 дней: 
+                <span class="{% if latest_report.price_change_percent > 0 %}text-success{% else %}text-danger{% endif %}">
+                    {{ latest_report.price_change_percent|floatformat:2 }}%
+                </span>
+            </p>
+            <p class="text-white">{{ latest_report.recommendation }}</p>
+        {% endif %}
+    </div>
+</div>
+
+{% if chart_html %}
+    <div class="card bg-dark border-secondary">
+        <div class="card-body">
+            {{ chart_html|safe }}
+        </div>
+    </div>
+{% else %}
+    <div class="alert alert-info">Загрузите данные через кнопку "Обновить" на главной</div>
+{% endif %}
+
+<h3 class="text-white mt-4">📜 История отчётов</h3>
+<table class="table table-dark table-striped">
+    <thead>
+        <tr><th>Дата расчёта</th><th>Период</th><th>Волатильность</th><th>Изменение</th><th>Рекомендация</th></tr>
+    </thead>
+    <tbody>
+        {% for report in reports %}
+        <tr>
+            <td>{{ report.calculated_at|date:"d.m.Y H:i" }}</td>
+            <td>{{ report.period_days }} дней</td>
+            <td>{{ report.volatility_percent }}%</td>
+            <td class="{% if report.price_change_percent > 0 %}text-success{% else %}text-danger{% endif %}">
+                {{ report.price_change_percent|floatformat:2 }}%
+            </td>
+            <td>{{ report.recommendation }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5">Нет отчётов. Нажмите "Обновить данные" на главной</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

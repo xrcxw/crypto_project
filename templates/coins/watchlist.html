@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 class="text-white">⭐ Мои отслеживаемые монеты</h1>
+
+<div class="row">
+    {% for item in watch_items %}
+    <div class="col-md-4 mb-3">
+        <div class="card bg-dark text-white border-secondary">
+            <div class="card-body">
+                <h5 class="card-title text-white">{{ item.coin.name }} ({{ item.coin.symbol }})</h5>
+                <p class="card-text text-white">💰 ${{ item.coin.current_price_usd }}</p>
+                {% if item.coin.latest_report %}
+                    <p class="card-text text-white">📊 Волатильность: {{ item.coin.latest_report.volatility_percent }}%</p>
+                {% endif %}
+                <div class="btn-group" role="group">
+                    <a href="{% url 'coin_detail' item.coin.id %}" class="btn btn-primary btn-sm">Детали</a>
+                    <a href="{% url 'remove_from_watchlist' item.coin.id %}" class="btn btn-danger btn-sm" 
+                       onclick="return confirm('Удалить {{ item.coin.name }} из избранного?')">🗑️ Удалить</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="alert alert-info">
+        У вас пока нет избранных монет. Добавьте их на странице деталей криптовалюты.
+    </div>
+    {% endfor %}
+</div>
+
+<a href="{% url 'index' %}" class="btn btn-secondary mt-3">← На главную</a>
+{% endblock %}

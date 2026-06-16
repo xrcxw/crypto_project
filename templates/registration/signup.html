@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card bg-dark text-white border-secondary">
+            <div class="card-header">
+                <h3>📝 Регистрация</h3>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+                    <a href="{% url 'login' %}" class="btn btn-outline-secondary">Уже есть аккаунт? Войти</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

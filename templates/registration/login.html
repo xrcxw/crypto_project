@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card bg-dark text-white border-secondary">
+            <div class="card-header">
+                <h3>🔐 Вход в систему</h3>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Имя пользователя</label>
+                        <input type="text" name="username" class="form-control bg-dark text-white" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Пароль</label>
+                        <input type="password" name="password" class="form-control bg-dark text-white" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Войти</button>
+                    <a href="{% url 'signup' %}" class="btn btn-outline-secondary">Регистрация</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
